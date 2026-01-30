@@ -1,178 +1,119 @@
 <template>
-	<a-config-provider  >
-		<CommonEditActionDropdown
-			trigger="contextMenu"
-			align-point
-			position="bl"
-			:style="{ display: 'block' }"
-		>
-			<div class="row h-100 w-100 p-0 m-0">
-				<div class="col p-0 m-0">
-					<div class="row main h-100 w-100 p-0 m-0">
-						<div class="col-12 p-0 m-0"><Title id="title" /></div>
-						<div class="col-12 p-0 m-0 overflow-auto d-flex">
-							<div
-								
-								class="h-100"
-							>
-								<!-- 侧边栏图标 -->
-								<div class="col-auto sider h-100">
-									<div class="sider-items" >
-										<template
-											v-for="(item, index) in (routes.find((r) => r.name === 'index')?.children as CustomRouteType[])"
-											:key="index"
-										>
-											<div
-												class="sider-item"
-												:class="{ active: item.name === currentRoute.name }"
-												@click="clickMenu(item)" >
-                                                {{item.name}}
-											</div>
-										</template>
-									</div>
-								</div>
-							</div>
-							<div :style="{ width: `calc(100% - 0px)` }">
-								<router-view v-slot="{ Component }">
-									<keep-alive>
-										<component :is="Component" />
-									</keep-alive>
-								</router-view>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</CommonEditActionDropdown>
-	</a-config-provider>
-</template>
+  <a-layout>
+    <a-layout-header class="header">
+      <a-space>
+        <div class="logo" />
+        <a-menu
+          v-model:selectedKeys="selectedKeys1"
+          theme="dark"
+          mode="horizontal"
+          :style="{ lineHeight: '64px' }"
+        >
+          <a-menu-item key="1">nav 1</a-menu-item>
+          <a-menu-item key="2">nav 2</a-menu-item>
+          <a-menu-item key="3">nav 3</a-menu-item>
+        </a-menu>
+      </a-space>
+    </a-layout-header>
+    <a-layout>
+      <a-layout-sider width="200" style="background: #fff">
+        <a-menu
+          v-model:selectedKeys="selectedKeys2"
+          v-model:openKeys="openKeys"
+          mode="inline"
+          :style="{ height: '100%', borderRight: 0 }"
+        >
+          <a-sub-menu key="sub1">
+            <template #title>
+              <span>
+                <user-outlined />
+                subnav 1
+              </span>
+            </template>
+           <a-menu-item v-for="(item, index) in (routes.find((r) => r.name === 'index')?.children as CustomRouteType[])" :key="index+1"  @click="clickMenu(item)"> {{item.name}}</a-menu-item>
 
-<script setup lang="ts">
-import { onMounted, ref, watch, reactive, computed } from 'vue';
-import { RouteRecordRaw, useRouter } from 'vue-router';
+          </a-sub-menu>
+          <a-sub-menu key="sub2">
+            <template #title>
+              <span>
+                <laptop-outlined />
+                subnav 2
+              </span>
+            </template>
+            <a-menu-item key="5">option5</a-menu-item>
+            <a-menu-item key="6">option6</a-menu-item>
+            <a-menu-item key="7">option7</a-menu-item>
+            <a-menu-item key="8">option8</a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="sub3">
+            <template #title>
+              <span>
+                <notification-outlined />
+                subnav 3
+              </span>
+            </template>
+            <a-menu-item key="9">option9</a-menu-item>
+            <a-menu-item key="10">option10</a-menu-item>
+            <a-menu-item key="11">option11</a-menu-item>
+            <a-menu-item key="12">option12</a-menu-item>
+          </a-sub-menu>
+        </a-menu>
+      </a-layout-sider>
+      <a-layout style="padding: 0 24px 24px">
+        <a-breadcrumb style="margin: 16px 0">
+          <a-breadcrumb-item>Home</a-breadcrumb-item>
+          <a-breadcrumb-item>List</a-breadcrumb-item>
+          <a-breadcrumb-item>App</a-breadcrumb-item>
+        </a-breadcrumb>
+        <a-layout-content
+          :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
+        >
+          <router-view v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
+        </a-layout-content>
+      </a-layout>
+    </a-layout>
+  </a-layout>
+</template>
+<script lang="ts" setup>
+import { ref } from 'vue'
 import { router, routes, CustomRouteType } from '../route';
+import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons-vue'
+import { RouteRecordRaw, useRouter } from 'vue-router';
 import { remote } from '../utils/remote';
-const version = ref('');
+
+const selectedKeys1 = ref<string[]>(['2'])
+const selectedKeys2 = ref<string[]>(['1'])
+const openKeys = ref<string[]>(['sub1'])
+
 // 当前路由
 const currentRoute = useRouter().currentRoute;
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function clickMenu(route: RouteRecordRaw & { meta: { title: string } }) {
-	router.push(route.path);
-	remote.win.call('setTitle', `OCS - ${route.meta.title}`);
+  router.push(route.path);
+  remote.win.call('setTitle', `PCO - ${route.meta.title}`);
 }
+
 
 </script>
-<style lang="less">
-
-.main {
-	display: grid;
-	grid-template-rows: 32px calc(100vh - 32px);
-	grid-template-areas:
-		'header'
-		'main ';
+<style scoped>
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.sider {
-	-webkit-app-region: no-drag;
-	user-select: none;
-	padding: 4px 24px 4px 0px;
-	text-align: center;
-	display: flex;
-	justify-content: left;
-	border-right: 1px solid #f3f3f3;
-
-	.sider-items {
-		padding-top: 12px;
-
-		.sider-item {
-			padding: 8px;
-			display: flex;
-			cursor: pointer;
-			align-items: center;
-			border-left: 6px solid white;
-		}
-		.sider-item.active {
-			background-color: #f4f9ff;
-			border-left: 6px solid #1890ff;
-		}
-
-		.sider-item-title {
-			font-size: 13px;
-		}
-
-		.sider-item + .sider-item {
-			margin-top: 12px;
-		}
-
-		.icon {
-			width: 28px;
-			height: 28px;
-			font-size: 28px;
-			cursor: pointer;
-		}
-	}
-
-	.version {
-		font-size: 12px;
-		position: absolute;
-		bottom: 0px;
-	}
+.logo {
+  //margin: 16px 0 16px 24px;
 }
 
-.ant-modal-confirm .ant-modal-body {
-	padding: 12px !important;
-}
-
-/* 新手教程遮罩层 */
-.tutorial {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: #00000030;
-	z-index: 100;
-	top: 0;
-	left: 0;
-}
-
-.bp-toc {
-	position: absolute;
-	background: white;
-	z-index: 999;
-	right: 400px;
-
-	animation-duration: 0.5s;
-	animation-name: slide-in;
-	animation-timing-function: ease;
-	padding: 4px;
-	border-radius: 8px 0px 0px 8px;
-	font-size: 12px;
-	top: 24px;
-	color: #86909c;
-
-	* {
-		cursor: pointer;
-		margin: 6px 0px 6px 6px;
-		padding: 4px;
-		border-radius: 4px;
-
-		&:hover {
-			background-color: #ececec;
-		}
-	}
-}
-
-.app-container {
-	flex: 0 0 auto;
-}
-
-@keyframes slide-in {
-	from {
-		top: -500px;
-	}
-
-	to {
-		top: 24px;
-	}
+.site-layout-background {
+  background: #fff;
 }
 </style>

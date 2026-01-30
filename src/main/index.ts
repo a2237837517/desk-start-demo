@@ -2,8 +2,14 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { task } from '../main/utils';
 
-function createWindow(): void {
+import { testdb } from '../main/db'
+
+import { remoteRegister } from '../main/utils/remote.register'
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -16,7 +22,6 @@ function createWindow(): void {
       sandbox: false
     }
   })
-
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -33,8 +38,8 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+  return mainWindow
 }
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -57,12 +62,15 @@ app.whenReady().then(() => {
 
   })
 
-  createWindow()
-
+  const window =createWindow()
+  onCreate(window)
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) {
+      const window = createWindow()
+      onCreate(window)
+    }
   })
 })
 
@@ -74,6 +82,11 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function onCreate(window: BrowserWindow) {
+  task('初始化远程通信模块', () => remoteRegister(window))
+}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

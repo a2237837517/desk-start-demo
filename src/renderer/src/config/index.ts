@@ -4,28 +4,36 @@ import page from '../pages/index.vue';
 // import { remote } from '../utils/remote';
 
 export const config = reactive({
-	routes: [
-		{
-			name: 'index',
-			path: '/',
-			redirect: '/version',
-			component: shallowRef(page),
-			children: [
-				{
-					name: 'version',
-					path: 'version',
-					component: () => import('../pages/version.vue'),
-					meta: {
-						icon: 'view_list',
-						title: '浏览器列表'
-					}
-				}
-			 ]
-			}
-	] as RouteRecordRaw[],
-	/** 主题预设 */
-	themes: {
-		dark: false
-	},
-
-});
+  routes: [
+    {
+      name: 'index',
+      path: '/',
+      // redirect: '/version',
+      component: shallowRef(page),
+      children: [
+        {
+          name: 'version',
+          path: 'version',
+          component: () => import('../pages/version.vue'),
+          meta: {
+            icon: 'view_list',
+            title: '浏览器列表'
+          }
+        },
+        {
+          name: 'db',
+          path: 'db',
+          component: () => import('../pages/db.vue'),
+          meta: {
+            icon: 'view_list',
+            title: 'db'
+          }
+        }
+      ]
+    }
+  ] as RouteRecordRaw[],
+  /** 主题预设 */
+  themes: {
+    dark: false
+  }
+})
